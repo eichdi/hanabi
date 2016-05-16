@@ -11,8 +11,6 @@ namespace hanabi
    
     class Program
     {
-
-        
         static void Main(string[] args)
         {
             int level = 2;
