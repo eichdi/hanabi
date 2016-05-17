@@ -18,6 +18,9 @@ namespace hanabi.GameLogic
                 return card.Count != 0;
             }
         }
+
+
+
         public PackOfCard(Card[] card)
         {
             this.card = new Queue<Card>(card);
@@ -43,6 +46,17 @@ namespace hanabi.GameLogic
             {
                 return null;
             }
+        }
+        public static PackOfCard GetRandomCard()
+        {
+            //пока так, написать функцию для того чтобы генерить infocard
+            string[] infocard = "Y4 R4 Y1 W4 W3 W4 W5 W2 R1 Y1 B1 G3 G2 B5 R2 G3 Y4 R3 B2 B2 W1 W2 W1 B3 Y3 G4 G1 Y5 G2 R5 R1 Y1 R2 Y3 G4 Y2 B4 R3 R4 W1 G5 B3 B1 G1 G1 B1 B4 Y2 W3 R1".Split(' ');
+            List<Card> cardList = new List<Card>();
+            foreach (var item in infocard)
+            {
+                cardList.Add(new Card(item));
+            }
+            return new PackOfCard(cardList.ToArray());
         }
     }
 }

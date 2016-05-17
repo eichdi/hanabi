@@ -28,6 +28,7 @@ namespace hanabi.GameLogic
                 return secondPlayer.player;
             }
         }
+
         //true игра продолжается
         private bool state;
         public int GamedCards
@@ -37,6 +38,9 @@ namespace hanabi.GameLogic
                 return gamedCards;
             }
         }
+
+        //возможно ли продолжать игру
+
         public bool State
         {
             get
@@ -44,6 +48,7 @@ namespace hanabi.GameLogic
                 return state && pack.State;
             }
         }
+
         public int Risk
         {
             get
@@ -51,6 +56,7 @@ namespace hanabi.GameLogic
                 return risk;
             }
         }
+
         public string GetTableCard()
         {
             return table.GetTableCard();
@@ -59,19 +65,26 @@ namespace hanabi.GameLogic
         {
             state = false;
         }
-        public Game(Player player1, Player player2, PackOfCard pack, GameTable table = null)
+        public Game(Player player1, Player player2, PackOfCard pack = null, GameTable table = null)
         {
+            if(pack == null){
+                pack = PackOfCard.GetRandomCard();
+            }
+            if (table == null)
+            {
+                table = new GameTable();
+            }
             risk = 0;
             gamedCards = 0;
             state = true;
             this.firstPlayer = new InfoPlayer(player1, pack);
             this.secondPlayer = new InfoPlayer(player2, pack);
-            if (table == null)
-            {
-                this.table = new GameTable();
-            }
+            player1.SetGame(this);
+            player2.SetGame(this);
+            this.table = table;
             this.pack = pack;
         }
+        
         //1
         public void PlayCard(Player player, int index)
         {
@@ -144,6 +157,7 @@ namespace hanabi.GameLogic
             DoNextPlayer();
         }
 
+        //Возможность игры для игрока
         private bool CanPlay(Player player)
         {
             if (player.ID == firstPlayer.player.ID && state)
@@ -152,12 +166,20 @@ namespace hanabi.GameLogic
             }
             return false;
         }
+
+        public bool CheckPlayer(Player player)
+        {
+            return (firstPlayer.player == player || secondPlayer.player == player);
+        }
+
+
         private void DoNextPlayer()
         {
             InfoPlayer temp = firstPlayer;
             firstPlayer = secondPlayer;
             secondPlayer = temp;
         }
+
         public CollectCardOnHand GetOpponentCard(Player player)
         {
             if (CanPlay(player))
@@ -169,6 +191,10 @@ namespace hanabi.GameLogic
                 return null;
             }
         }
+
+
+
+        //возможный функционал
         public string GetRiskCurrentPlayerCard()
         {
             return this.firstPlayer.cardPlayer.GetRisk(table);
@@ -177,7 +203,6 @@ namespace hanabi.GameLogic
         {
             return this.secondPlayer.cardPlayer.GetRisk(table);
         }
-
         public string GetCurrentPlayerCard()
         {
             return Service.ConvertCard(firstPlayer.cardPlayer);
