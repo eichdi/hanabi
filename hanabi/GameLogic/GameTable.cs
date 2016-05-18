@@ -53,11 +53,11 @@ namespace hanabi.GameLogic
             }
             return false;
         }
-
         public Dictionary<string, Card> GetHeap()
         {
             return new Dictionary<string, Card>(heap);
         }
+
         public bool CanPutRank(int rank)
         {
             int tempRank = rank - 1;
