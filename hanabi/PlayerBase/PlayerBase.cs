@@ -24,7 +24,9 @@ namespace hanabi.PlayerBase
                     return player;
                 }
             }
-            return new Player(id);
+            Player tempPlayer = new Player(id);
+            playerList.Add(tempPlayer);
+            return tempPlayer;
         }
     }
 }
