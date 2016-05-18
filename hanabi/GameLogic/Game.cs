@@ -65,6 +65,13 @@ namespace hanabi.GameLogic
         {
             state = false;
         }
+
+        public bool SynchGame(Player player1, Player player2){
+            this.firstPlayer.player = player1;
+            this.secondPlayer.player = player2;
+            return player1.SetGame(this) && player2.SetGame(this);
+        }
+
         public Game(Player player1, Player player2, PackOfCard pack = null, GameTable table = null)
         {
             if(pack == null){
