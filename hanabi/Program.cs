@@ -8,7 +8,7 @@ using hanabi.Controller;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
-using System.IO;
+
 namespace hanabi
 {
    
@@ -31,6 +31,9 @@ namespace hanabi
 
             var offset = 0;
 
+			Command com = new Command(0);
+
+
             while (true)
             {
                 var updates = await Bot.GetUpdates(offset);
@@ -39,19 +42,24 @@ namespace hanabi
                 {
                     if (update.Message.Type == MessageType.TextMessage)
                     {
-                        await Bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
-                        //await Task.Delay(2000);
-                        var t = await Bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
-                        Console.WriteLine("Echo Message: {0}", update.Message.Text);
+						//await Bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
+						//await Task.Delay(2000);
+						//var t = await Bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
+						//Console.WriteLine("Echo Message: {0}", update.Message.Text);
+						//if (update.Message.From.I == com.game.CurrentPlayer) {
+						//com.DoFunc(update.Message.Text);
+						//}
+						Console.WriteLine("	" + update.Message.Text);
+						var t = await Bot.SendTextMessage(update.Message.Chat.Id, Console.ReadLine());
                     }
 
                     if (update.Message.Type == MessageType.PhotoMessage)
                     {
                         var file = await Bot.GetFile(update.Message.Photo.LastOrDefault().FileId);
 
-                        Console.WriteLine("Received Photo: {0}", file.FilePath);
+						Console.WriteLine("Received Photo: {0}", file.FilePath);
 
-                        var filename = file.FileId+"."+file.FilePath.Split('.').Last();
+						var filename = file.FileId+"."+file.FilePath.Split('.').Last();
 
                         using (var profileImageStream = File.Open(filename, FileMode.Create))
                         {
