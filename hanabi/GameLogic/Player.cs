@@ -8,26 +8,56 @@ namespace hanabi.GameLogic
 {
     class Player
     {
-        //Для возможной игры через сеть
-        private int id;
-        public Game game;
-        public int ID
+        private long id;
+        private Game game;
+        public bool State
+        {
+            get
+            {
+                return game != null && game.State;
+            }
+        }
+        public long ID
         {
             get
             {
                 return id;
             }
         }
-        public Player(Game game)
+        public Player(Game game, long ID)
         {
             this.game = game;
             //уникальное значение
-            this.id = Service.GetID;
+            this.id = ID;
+        }
+        public Player(long ID)
+        {
+            this.id = ID;
+        }
+        public bool SetGame(Game game)
+        {
+            if (game.CheckPlayer(this))
+            {
+                this.game = game;
+                return true;
+            }
+            return false;
         }
         public string GetOpponentCard()
         {
             return Service.ConvertCard(game.GetOpponentCard(this));
         }
+        public string GetTableCard()
+        {
+            return game.GetTableCard();
+        }
+
+        //так то пользователь должен помнить свои карты сам
+        //public string GetMyCard() { 
+        //
+        //}
+
+
         public void PlayCard(int index)
         {
             game.PlayCard(this, index);

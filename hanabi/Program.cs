@@ -37,6 +37,7 @@ namespace hanabi
             while (true)
             {
                 var updates = await Bot.GetUpdates(offset);
+                
 
                 foreach (var update in updates)
                 {
