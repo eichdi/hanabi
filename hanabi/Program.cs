@@ -16,9 +16,10 @@ namespace hanabi
     {
         static void Main(string[] args)
         {
-            var Bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
+            Command com = new Command("");
+            //var Bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
 
-            Run(Bot).Wait();
+            //Run(Bot).Wait();
         }
 
         static async Task Run(Api Bot)
@@ -26,12 +27,13 @@ namespace hanabi
 
 
             var me = await Bot.GetMe();
+            
 
             Console.WriteLine("Hello my name is {0}", me.Username);
 
             var offset = 0;
 
-			Command com = new Command(0);
+			//Command com = new Command();
 
 
             while (true)

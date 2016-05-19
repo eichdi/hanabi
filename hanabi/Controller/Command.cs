@@ -4,58 +4,81 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using hanabi.GameLogic;
+using Telegram.Bot;
+using hanabi.PlayerBase;
 
 namespace hanabi.Controller
 {
     class Command
     {
-        public Game game;
         private int turn;
-        private int level;
-        public bool State
+        private Player waitPlayer;
+        private Api bot;
+        private IPlayerBase playerBase;
+        public string Instruction = "123";
+
+        public void StartGame(long id)
         {
-            get
+            Player player = playerBase.GetPlayer(id);
+
+            if (waitPlayer != null && waitPlayer.ID != id)
             {
-                return game != null && game.State;
+                var game = new Game(player, waitPlayer);
+                bot.SendTextMessage(player.ID, "Игра началась \n " + Instruction);
+                ShowInfo(player);
+                bot.SendTextMessage(waitPlayer.ID, "Игра началась \n" + Instruction);
+                ShowInfo(waitPlayer);
+                waitPlayer = null;
+            }
+            else
+            {
+                waitPlayer = player;
+                bot.SendTextMessage(player.ID, "Подождите пока мы не найдем второго игрока");
             }
         }
-        public void StartGame(string[] card)
+
+        private void ShowInfo(Player player)
         {
-            turn = 0;
-            Player player1 = new Player(null);
-            Player player2 = new Player(null);
-            PackOfCard pack = new PackOfCard(card);
-            game = new Game(player1, player2, pack);
-            player1.game = game;
-            player2.game = game;
+            if (player.State)
+            {
+                bot.SendTextMessage(player.ID, player.GetOpponentCard() + player.GetTableCard());   
+            }
+            else
+            {
+                bot.SendTextMessage(player.ID, "Игра закончена!");
+            }
         }
 
+        private void ShowInfo(long id)
+        {
+            ShowInfo(playerBase.GetPlayer(id));
+        }
 
-        public void PlayCard(string sindex)
+        public void PlayCard(string sindex, long id)
         {
             try
             {
                 int index = int.Parse(sindex);
-                game.CurrentPlayer.PlayCard(index);
+                //game.CurrentPlayer.PlayCard(index);
             }
             catch
             {
                 throw new Exception("input exception");
             }
         }
-        public void DropCard(string sindex)
+        public void DropCard(string sindex, long id)
         {
             try
             {
                 int index = int.Parse(sindex);
-                game.CurrentPlayer.Drop(index);
+                //game.CurrentPlayer.Drop(index);
             }
             catch
             {
                 throw new Exception("input exception");
             }
         }
-        public void TellColor(string color, string[] cards)
+        public void TellColor(string color, string[] cards, long id)
         {
             try
             {
@@ -64,14 +87,14 @@ namespace hanabi.Controller
                 {
                     index[i] = int.Parse(cards[i]);
                 }
-                game.CurrentPlayer.TellColor(color, index);
+                //game.CurrentPlayer.TellColor(color, index);
             }
             catch
             {
                 throw new Exception("input exception");
             }
         }
-        public void TellRank(string srank, string[] cards)
+        public void TellRank(string srank, string[] cards, long id)
         {
             try
             {
@@ -81,7 +104,7 @@ namespace hanabi.Controller
                 {
                     index[i] = int.Parse(cards[i]);
                 }
-                game.CurrentPlayer.TellRank(rank, index);
+                //game.CurrentPlayer.TellRank(rank, index);
             }
             catch
             {
@@ -89,40 +112,67 @@ namespace hanabi.Controller
             }
         }
 
-        public Command(int level)
+        public Command(string token)
         {
-            this.level = level;
+            //bot = new Api(token);
+            bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
+            playerBase = new PlayerBase.PlayerBase();
+            bot.StopReceiving();
+            bot.StartReceiving();
+            ListenMessege().Wait();
+        }
+
+        public async Task ListenMessege()
+        {
+            var me = bot.GetMe();
+            Console.WriteLine("I listen!");
+            var offset = 0;
+
+            while (true)
+            {
+                var updates = await bot.GetUpdates();
+                foreach (var update in updates)
+                {
+                    if (update.Message.Type == Telegram.Bot.Types.MessageType.TextMessage)
+                    {
+                        MakeMove(update.Message.Text, update.Message.Chat.Id);
+                    }
+
+                    offset = update.Id + 1;
+                }
+            }
+
         }
 
 
-        public bool DoFunc(string command)
+        public bool MakeMove(string command, long id)
         {
             turn++;
-            if (command.Contains("Start new game with deck "))
+            if (command.Contains("Start"))
             {
-				StartGame(Service.GetCards("Start new game with deck ", command));
+				StartGame(id);
                 return true;
             }
             if (command.Contains("Play card "))
             {
-                PlayCard(Service.GetCard("Play card ", command));
+                PlayCard(Service.GetCard("Play card ", command),id);
                 return true;
             }
             if (command.Contains("Tell rank "))
             {
                 string[] analize = command.Split(' ');
-                TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command));
+                TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command),id);
                 return true;
             }
             if (command.Contains("Tell color "))
             {
                 string[] analize = command.Split(' ');
-                TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command));
+                TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command),id);
                 return true;
             }
             if (command.Contains("Drop card "))
             {
-                DropCard(Service.GetCard("Drop card ", command));
+                DropCard(Service.GetCard("Drop card ", command),id);
                 return true;
             }
             return false;
@@ -130,37 +180,32 @@ namespace hanabi.Controller
 
         public string GetResultGame()
         {
-            if (this.State == false)
-            {
-                if (level == 2)
-                {
-                    return "Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + game.Risk.ToString();
-                }
-                else
-                {
-                    return "Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + "0";
-                }
-            }
-            else return null;
+            //if (this.State == false)
+            //{
+            //    return "Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() ;
+            //}
+            //else return null;
+            return null;
         }
         public string GetResult(string command)
         {
-            if (this.game != null)
-            {
-                string result = "";
-                result += "\n Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + game.Risk.ToString() + ", state: " + this.State.ToString();
-                result += "\n" + "  Current player: " + this.game.GetCurrentPlayerCard();
-                result += "\n" + "                  " + this.game.GetRiskCurrentPlayerCard();
-                result += "\n" + "     Next player: " + this.game.GetNextPlayerCard();
-                result += "\n" + "                  " + this.game.GetRiskNextPlayerCard();
-                result += "\n" + "           Table: " + this.game.GetTableCard();
-                result += "\n" + command;
-                return result;
-            }
-            else
-            {
-                return command;
-            }
+            //if (this.game != null)
+            //{
+            //    string result = "";
+            //    result += "\n Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + game.Risk.ToString() + ", state: " + this.State.ToString();
+            //    result += "\n" + "  Current player: " + this.game.GetCurrentPlayerCard();
+            //    result += "\n" + "                  " + this.game.GetRiskCurrentPlayerCard();
+            //    result += "\n" + "     Next player: " + this.game.GetNextPlayerCard();
+            //    result += "\n" + "                  " + this.game.GetRiskNextPlayerCard();
+            //    result += "\n" + "           Table: " + this.game.GetTableCard();
+            //    result += "\n" + command;
+            //    return result;
+            //}
+            //else
+            //{
+            //    return command;
+            //}
+            return null;
         }
     }
 }
