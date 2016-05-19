@@ -19,15 +19,13 @@ namespace hanabi.Controller
                 return game != null && game.State;
             }
         }
-        public void StartGame(string[] card)
+        public void StartGame(string[] card, long id1, long id2)
         {
             turn = 0;
-            Player player1 = new Player(null);
-            Player player2 = new Player(null);
+            Player player1 = new Player(id1);
+            Player player2 = new Player(id2);
             PackOfCard pack = new PackOfCard(card);
             game = new Game(player1, player2, pack);
-            player1.game = game;
-            player2.game = game;
         }
 
 
@@ -102,7 +100,9 @@ namespace hanabi.Controller
                 turn++;
                 if (command.Contains("Start new game with deck "))
                 {
-                    StartGame(Service.GetCards("Start new game with deck ", command));
+                    //временное решение
+                    // TODO : пересобрать эту часть кода
+                    StartGame(Service.GetCards("Start new game with deck ", command),0,1);
                     return true;
                 }
                 if (command.Contains("Play card "))
