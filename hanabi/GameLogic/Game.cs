@@ -86,8 +86,10 @@ namespace hanabi.GameLogic
             state = true;
             this.firstPlayer = new InfoPlayer(player1, pack);
             this.secondPlayer = new InfoPlayer(player2, pack);
-            player1.SetGame(this);
-            player2.SetGame(this);
+            if (!this.SynchGame(player1, player2))
+            {
+                throw new Exception();
+            }
             this.table = table;
             this.pack = pack;
         }
