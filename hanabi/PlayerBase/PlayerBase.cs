@@ -7,7 +7,7 @@ using hanabi.GameLogic;
 
 namespace hanabi.PlayerBase
 {
-    class PlayerBase
+    class PlayerBase : IPlayerBase
     {
         private List<Player> playerList;
 
