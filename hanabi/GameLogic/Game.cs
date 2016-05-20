@@ -191,14 +191,12 @@ namespace hanabi.GameLogic
 
         public CollectCardOnHand GetOpponentCard(Player player)
         {
-            if (CanPlay(player))
-            {
+            if(player == firstPlayer.player)
                 return secondPlayer.cardPlayer;
-            }
-            else
-            {
-                return null;
-            }
+            if (player == secondPlayer.player)
+                return firstPlayer.cardPlayer;
+            return null;
+
         }
 
 
