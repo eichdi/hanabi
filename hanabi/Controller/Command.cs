@@ -24,16 +24,19 @@ namespace hanabi.Controller
             if (waitPlayer != null && waitPlayer.ID != id)
             {
                 var game = new Game(player, waitPlayer);
-                bot.SendTextMessage(player.ID, "Игра началась \n " + Instruction);
+
+                Respond(player.ID, "Игра началась \n " + Instruction).Wait();
                 ShowInfo(player);
-                bot.SendTextMessage(waitPlayer.ID, "Игра началась \n" + Instruction);
+
+                Respond(waitPlayer.ID, "Игра началась \n " + Instruction).Wait();
                 ShowInfo(waitPlayer);
+
                 waitPlayer = null;
             }
             else
             {
                 waitPlayer = player;
-                bot.SendTextMessage(player.ID, "Подождите пока мы не найдем второго игрока");
+                Respond(player.ID, "Подождите пока мы не найдем второго игрока").Wait();
             }
         }
 
@@ -41,11 +44,11 @@ namespace hanabi.Controller
         {
             if (player.State)
             {
-                bot.SendTextMessage(player.ID, player.GetOpponentCard() + player.GetTableCard());   
+                Respond(player.ID, player.GetOpponentCard() + player.GetTableCard()).Wait();   
             }
             else
             {
-                bot.SendTextMessage(player.ID, "Игра закончена!");
+                Respond(player.ID, "Игра закончена!").Wait();
             }
         }
 
@@ -122,6 +125,12 @@ namespace hanabi.Controller
             ListenMessege().Wait();
         }
 
+        public async Task Respond(long chatId, string text)
+        {
+            Console.WriteLine(chatId.ToString() + " send this - " + text);
+            await bot.SendTextMessage(chatId, text);
+        }
+
         public async Task ListenMessege()
         {
             var me = bot.GetMe();
@@ -135,6 +144,7 @@ namespace hanabi.Controller
                 {
                     if (update.Message.Type == Telegram.Bot.Types.MessageType.TextMessage)
                     {
+                        Console.WriteLine(update.Message.Text + " from " + update.Message.From.FirstName +" "+ update.Message.Chat.Id);
                         MakeMove(update.Message.Text, update.Message.Chat.Id);
                     }
 
