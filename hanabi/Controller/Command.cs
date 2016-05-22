@@ -161,7 +161,7 @@ namespace hanabi.Controller
             }
             if (command.Contains("play"))
             {
-                PlayCard(Service.GetCard("play card ", command),id);
+                PlayCard(Service.GetCard("play card", command),id);
                 return true;
             }
             if (command.Contains("tell rank"))
@@ -173,7 +173,8 @@ namespace hanabi.Controller
             if (command.Contains("tell color"))
             {
                 string[] analize = command.Split(' ');
-                TellColor(analize[2], Service.GetCards(("tell color" + analize[2] + " for cards "), command),id);
+                string color = Service.GetColor(command);
+                TellColor(Service.GetColor(command), Service.GetCards(("tell color" + analize[2] + " for cards "), command),id);
                 return true;
             }
             if (command.Contains("drop"))
