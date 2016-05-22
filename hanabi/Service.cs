@@ -19,6 +19,30 @@ namespace hanabi
                 return id;
             }
         }
+
+        public static string GetColor(string command)
+        {
+            // какашка которая делает так что в команде нет двух цветов
+            if(!((command.Contains(Card.Red) && (command.Contains(Card.Blue) || command.Contains(Card.Green) || command.Contains(Card.White) || command.Contains(Card.Yellow))) ||
+               (command.Contains(Card.Blue) && (command.Contains(Card.Red) || command.Contains(Card.Green) || command.Contains(Card.White) || command.Contains(Card.Yellow))) ||
+               (command.Contains(Card.Green) && (command.Contains(Card.Red) || command.Contains(Card.Blue) || command.Contains(Card.White) || command.Contains(Card.Yellow))) ||
+               (command.Contains(Card.White) && (command.Contains(Card.Red) || command.Contains(Card.Blue) || command.Contains(Card.Green) || command.Contains(Card.Yellow))) ||
+               (command.Contains(Card.Yellow) && (command.Contains(Card.Red) || command.Contains(Card.Blue) || command.Contains(Card.Green) || command.Contains(Card.White)))))
+            {
+                if(command.Contains(Card.Red))
+                    return Card.Red;
+                if (command.Contains(Card.Blue))
+                    return Card.Blue;
+                if (command.Contains(Card.Green))
+                    return Card.Green;
+                if (command.Contains(Card.White))
+                    return Card.White;
+                if (command.Contains(Card.White))
+                    return Card.White;
+            }
+            return null;
+        }
+
         public static string ConvertColor(string color)
         {
             switch (color)
@@ -62,6 +86,16 @@ namespace hanabi
         public static string[] GetCards(string nameCommand, string command)
         {
             return command.Substring(nameCommand.Length).Split(' ');
+        }
+        public static string[] GetIndexCards(string command)
+        {
+
+            foreach (var word in command)
+            {
+                
+
+            }
+            return null; // TODO: GetIndexCards
         }
     }
 }

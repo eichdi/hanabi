@@ -16,7 +16,7 @@ namespace hanabi
     {
         static void Main(string[] args)
         {
-            Command com = new Command("");
+            Command com = new Command("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
             //var Bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
 
             //Run(Bot).Wait();

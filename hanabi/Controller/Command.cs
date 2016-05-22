@@ -11,7 +11,6 @@ namespace hanabi.Controller
 {
     class Command
     {
-        private int turn;
         private Player waitPlayer;
         private Api bot;
         private IPlayerBase playerBase;
@@ -51,7 +50,6 @@ namespace hanabi.Controller
                 Respond(player.ID, "Игра закончена!").Wait();
             }
         }
-
         private void ShowInfo(long id)
         {
             ShowInfo(playerBase.GetPlayer(id));
@@ -117,8 +115,7 @@ namespace hanabi.Controller
 
         public Command(string token)
         {
-            //bot = new Api(token);
-            bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
+            bot = new Api(token);
             playerBase = new PlayerBase.PlayerBase();
             bot.StopReceiving();
             bot.StartReceiving();
@@ -130,7 +127,6 @@ namespace hanabi.Controller
             Console.WriteLine(chatId.ToString() + " send this - " + text);
             await bot.SendTextMessage(chatId, text);
         }
-
         public async Task ListenMessege()
         {
             var me = bot.GetMe();
@@ -157,32 +153,32 @@ namespace hanabi.Controller
 
         public bool MakeMove(string command, long id)
         {
-            turn++;
-            if (command.Contains("Start"))
+            command = command.ToLower();
+            if (command == "start")
             {
 				StartGame(id);
                 return true;
             }
-            if (command.Contains("Play card "))
+            if (command.Contains("play"))
             {
-                PlayCard(Service.GetCard("Play card ", command),id);
+                PlayCard(Service.GetCard("play card ", command),id);
                 return true;
             }
-            if (command.Contains("Tell rank "))
+            if (command.Contains("tell rank"))
             {
                 string[] analize = command.Split(' ');
-                TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command),id);
+                TellRank(analize[2], Service.GetCards(("tell rank" + analize[2] + " for cards "), command),id);
                 return true;
             }
-            if (command.Contains("Tell color "))
+            if (command.Contains("tell color"))
             {
                 string[] analize = command.Split(' ');
-                TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command),id);
+                TellColor(analize[2], Service.GetCards(("tell color" + analize[2] + " for cards "), command),id);
                 return true;
             }
-            if (command.Contains("Drop card "))
+            if (command.Contains("drop"))
             {
-                DropCard(Service.GetCard("Drop card ", command),id);
+                DropCard(Service.GetCard("drop", command),id);
                 return true;
             }
             return false;
