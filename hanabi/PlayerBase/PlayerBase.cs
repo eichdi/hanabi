@@ -15,6 +15,7 @@ namespace hanabi.PlayerBase
         {
             playerList = new List<Player>();
         }
+
         public Player GetPlayer(long id)
         {
             foreach (Player player in playerList)

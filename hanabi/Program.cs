@@ -24,23 +24,12 @@ namespace hanabi
 
         static async Task Run(Api Bot)
         {
-
-
-            var me = await Bot.GetMe();
-            
-
-            Console.WriteLine("Hello my name is {0}", me.Username);
-
             var offset = 0;
-
 			//Command com = new Command();
-
-
             while (true)
             {
                 var updates = await Bot.GetUpdates(offset);
                 
-
                 foreach (var update in updates)
                 {
                     if (update.Message.Type == MessageType.TextMessage)
@@ -54,20 +43,6 @@ namespace hanabi
 						//}
 						Console.WriteLine("	" + update.Message.Text);
 						var t = await Bot.SendTextMessage(update.Message.Chat.Id, Console.ReadLine());
-                    }
-
-                    if (update.Message.Type == MessageType.PhotoMessage)
-                    {
-                        var file = await Bot.GetFile(update.Message.Photo.LastOrDefault().FileId);
-
-						Console.WriteLine("Received Photo: {0}", file.FilePath);
-
-						var filename = file.FileId+"."+file.FilePath.Split('.').Last();
-
-                        using (var profileImageStream = File.Open(filename, FileMode.Create))
-                        {
-                            await file.FileStream.CopyToAsync(profileImageStream);
-                        }
                     }
 
                     offset = update.Id + 1;

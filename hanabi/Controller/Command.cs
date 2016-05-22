@@ -43,7 +43,7 @@ namespace hanabi.Controller
         {
             if (player.State)
             {
-                Respond(player.ID, player.GetOpponentCard() + player.GetTableCard()).Wait();   
+                Respond(player.ID, "Карты второго игрока: " + player.GetOpponentCard() + "\nКарты на столе: " + player.GetTableCard()).Wait();   
             }
             else
             {
@@ -129,9 +129,8 @@ namespace hanabi.Controller
         }
         public async Task ListenMessege()
         {
-            var me = bot.GetMe();
-            Console.WriteLine("I listen!");
-            var offset = 0;
+            //var me = bot.GetMe();
+            Console.WriteLine("Ready to work");
 
             while (true)
             {
@@ -142,9 +141,9 @@ namespace hanabi.Controller
                     {
                         Console.WriteLine(update.Message.Text + " from " + update.Message.From.FirstName +" "+ update.Message.Chat.Id);
                         MakeMove(update.Message.Text, update.Message.Chat.Id);
-                    }
-
-                    offset = update.Id + 1;
+                    } else {
+						await bot.SendTextMessage(update.Message.Chat.Id, "Неизвестная комманда. Попробуйте еще раз");
+					}
                 }
             }
 
@@ -182,6 +181,7 @@ namespace hanabi.Controller
                 DropCard(Service.GetCard("drop", command),id);
                 return true;
             }
+
             return false;
         }
 

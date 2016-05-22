@@ -18,14 +18,14 @@ namespace hanabi.GameLogic
         {
             get
             {
-                return firstPlayer.player;
+                return firstPlayer.Player;
             }
         }
         public Player NextPlayer
         {
             get
             {
-                return secondPlayer.player;
+                return secondPlayer.Player;
             }
         }
 
@@ -67,8 +67,8 @@ namespace hanabi.GameLogic
         }
 
         public bool SynchGame(Player player1, Player player2){
-            this.firstPlayer.player = player1;
-            this.secondPlayer.player = player2;
+            this.firstPlayer.Player = player1;
+            this.secondPlayer.Player = player2;
             return player1.SetGame(this) && player2.SetGame(this);
         }
 
@@ -100,14 +100,14 @@ namespace hanabi.GameLogic
             if (CanPlay(player))
             {
                 //проверяем является ли карта первого игрока по индексу рискованной в зависимости еще от стола
-                bool risked = firstPlayer.cardPlayer.Card[index].RiskCard(table);
+                bool risked = firstPlayer.CardPlayer.Card[index].RiskCard(table);
                 if (risked)
                 {
                     bool a;
                     a = risked;
                 }
                 //кладем на стол карту игрока по индексу и за место нее ставим карту из колоды
-                if (!table.PutCard(firstPlayer.cardPlayer.TakeCard(index, pack.TakeCard())))
+                if (!table.PutCard(firstPlayer.CardPlayer.TakeCard(index, pack.TakeCard())))
                 {
                     EndGame();
                 }
@@ -129,7 +129,7 @@ namespace hanabi.GameLogic
         {
             if (CanPlay(player))
             {
-                table.DropCard(firstPlayer.cardPlayer.TakeCard(index, pack.TakeCard()));
+                table.DropCard(firstPlayer.CardPlayer.TakeCard(index, pack.TakeCard()));
                 DoNextPlayer();
             }
         }
@@ -141,7 +141,7 @@ namespace hanabi.GameLogic
                 for (int i = 0; i < index.Length; i++)
                 {
                     //обращаемся к картам следующего игрока по индексу и говорим ему цвет
-                    if (!secondPlayer.cardPlayer.Card[index[i]].CheckColor(color))
+                    if (!secondPlayer.CardPlayer.Card[index[i]].CheckColor(color))
                     {
                         EndGame();
                     }
@@ -157,7 +157,7 @@ namespace hanabi.GameLogic
                 for (int i = 0; i < index.Length; i++)
                 {
                     //обращаемся к картам следующего игрока по индексу и говорим ему ранк
-                    if (!secondPlayer.cardPlayer.Card[index[i]].CheckRank(rank))
+                    if (!secondPlayer.CardPlayer.Card[index[i]].CheckRank(rank))
                     {
                         EndGame();
                     }
@@ -169,7 +169,7 @@ namespace hanabi.GameLogic
         //Возможность игры для игрока
         private bool CanPlay(Player player)
         {
-            if (player.ID == firstPlayer.player.ID && state)
+            if (player.ID == firstPlayer.Player.ID && state)
             {
                 return true;
             }
@@ -178,7 +178,7 @@ namespace hanabi.GameLogic
 
         public bool CheckPlayer(Player player)
         {
-            return (firstPlayer.player == player || secondPlayer.player == player);
+            return (firstPlayer.Player == player || secondPlayer.Player == player);
         }
 
 
@@ -191,10 +191,10 @@ namespace hanabi.GameLogic
 
         public CollectCardOnHand GetOpponentCard(Player player)
         {
-            if(player == firstPlayer.player)
-                return secondPlayer.cardPlayer;
-            if (player == secondPlayer.player)
-                return firstPlayer.cardPlayer;
+            if(player == firstPlayer.Player)
+                return secondPlayer.CardPlayer;
+            if (player == secondPlayer.Player)
+                return firstPlayer.CardPlayer;
             return null;
 
         }
@@ -204,19 +204,19 @@ namespace hanabi.GameLogic
         //возможный функционал
         public string GetRiskCurrentPlayerCard()
         {
-            return this.firstPlayer.cardPlayer.GetRisk(table);
+            return this.firstPlayer.CardPlayer.GetRisk(table);
         }
         public string GetRiskNextPlayerCard()
         {
-            return this.secondPlayer.cardPlayer.GetRisk(table);
+            return this.secondPlayer.CardPlayer.GetRisk(table);
         }
         public string GetCurrentPlayerCard()
         {
-            return Service.ConvertCard(firstPlayer.cardPlayer);
+            return Service.ConvertCard(firstPlayer.CardPlayer);
         }
         public string GetNextPlayerCard()
         {
-            return Service.ConvertCard(secondPlayer.cardPlayer);
+            return Service.ConvertCard(secondPlayer.CardPlayer);
         }
 
 
