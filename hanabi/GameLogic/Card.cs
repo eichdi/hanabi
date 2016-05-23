@@ -8,11 +8,17 @@ namespace hanabi.GameLogic
 {
     class Card
     {
-        public const string Red = "Red";
-        public const string Yellow = "Yellow";
-        public const string Blue = "Blue";
-        public const string White = "White";
-        public const string Green = "Green";
+
+        //public const string Red = "Red";
+        //public const string Yellow = "Yellow";
+        //public const string Blue = "Blue";
+        //public const string White = "White";
+        //public const string Green = "Green";        
+        public const string Red = "R";
+        public const string Yellow = "Y";
+        public const string Blue = "B";
+        public const string White = "W";
+        public const string Green = "G";
         private string color;
         private int rank;
         public string Color
