@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace hanabi.GameLogic
 {
-    class Game : hanabi.GameLogic.IPlayerGame
+    class Game : IPlayerGame
     {
         private int risk;
         private int gamedCards;

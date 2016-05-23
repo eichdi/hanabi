@@ -13,7 +13,7 @@ namespace hanabi.Controller {
 		private Api bot;
 		private IPlayerBase playerBase;
         // TODO: Написать инструкцию к игре
-		public string Instruction = "123";
+		public string Instruction;
 
 		public void StartGame(long id) {
 			Player player = playerBase.GetPlayer(id);
@@ -93,6 +93,8 @@ namespace hanabi.Controller {
 		}
 
 		public Command(string token) {
+
+            Instruction = new System.IO.StreamReader("instruction.txt", Encoding.UTF8).ReadToEnd();
 			bot = new Api(token);
 			playerBase = new PlayerBase.PlayerBase();
 			bot.StopReceiving();
