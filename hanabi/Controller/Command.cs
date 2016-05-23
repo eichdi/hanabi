@@ -12,6 +12,7 @@ namespace hanabi.Controller {
 		private Player waitPlayer;
 		private Api bot;
 		private IPlayerBase playerBase;
+        // TODO: Написать инструкцию к игре
 		public string Instruction = "123";
 
 		public void StartGame(long id) {
@@ -21,11 +22,7 @@ namespace hanabi.Controller {
 				var game = new Game(player, waitPlayer);
 
 				Respond(player.ID, "Игра началась \n " + Instruction).Wait();
-				ShowInfo(player);
-
 				Respond(waitPlayer.ID, "Игра началась \n " + Instruction).Wait();
-				ShowInfo(waitPlayer);
-
 				waitPlayer = null;
 			} else {
 				waitPlayer = player;
@@ -33,36 +30,66 @@ namespace hanabi.Controller {
 			}
 		}
 
-		private void ShowInfo(Player player) {
-			if (player.State) {
-				//string knownCards = player.
-				Respond(player.ID, "Карты второго игрока: " + player.GetOpponentCard() + "\nКарты на столе: " + player.GetTableCard() +
-					"\nВаши карты:" + player.GetKnownCards()).Wait();
-			} else {
-				Respond(player.ID, "Игра закончена!").Wait();
-			}
+
+
+		
+
+        private void ShowInfo(Player player)
+        {
+            //Условие при котором ходит наш игрок
+            // TODO: Не правильно показывается карты нанешнего игрока, может проблема в  GetKnownCards
+            if (player.State)
+            {
+                Respond(player.ID, "Карты второго игрока: " + player.GetOpponentCard() + "\nКарты на столе: " + player.GetTableCard() +
+                    "\nВаши карты:" + player.GetKnownCards()).Wait();
+                Respond(player.ID, "Ваш ход").Wait();
+
+                Respond(player.GetOpponent().ID, "Карты второго игрока: " + player.GetOpponent().GetOpponentCard() + "\nКарты на столе: " + player.GetOpponent().GetTableCard() +
+                "\nВаши карты:" + player.GetOpponent().GetKnownCards()).Wait();
+                Respond(player.GetOpponent().ID, "Ход вашего оппонента").Wait();
+            }
+            else
+            {
+                if (player.PlayerGame != null)
+                {
+                    if (player.PlayerGame.State)
+                    {
+                        Respond(player.ID, "Карты второго игрока: " + player.GetOpponentCard() + "\nКарты на столе: " + player.GetTableCard() +
+                        "\nВаши карты:" + player.GetKnownCards()).Wait();
+                        Respond(player.ID, "Ход вашего оппонента").Wait();
+
+                        Respond(player.GetOpponent().ID, "Карты второго игрока: " + player.GetOpponent().GetOpponentCard() + "\nКарты на столе: " + player.GetOpponent().GetTableCard() +
+                        "\nВаши карты:" + player.GetOpponent().GetKnownCards()).Wait();
+                        Respond(player.GetOpponent().ID, "Ваш ход").Wait();
+                    }
+                    else //Случай при котором игра закончена 
+                    {
+                        Respond(player.ID, "Игра закончена!" + Instruction).Wait();
+                        Respond(player.GetOpponent().ID, "Игра закончена!" + Instruction).Wait();
+                    }
+                }
+                //Условие при котором игра не закончена и не ходит наш игрок
+            }
+        }
+
+
+        public void PlayCard(int index, Player player)
+        {
+            player.PlayCard(index);
 		}
 
-		private void ShowInfo(long id) {
-			ShowInfo(playerBase.GetPlayer(id));
+        public void DropCard(int index, Player player)
+        {
+            player.Drop(index);
 		}
 
-		public void PlayCard(int index, long id) {
-			playerBase.GetPlayer(id).PlayCard(index);
-			//game.CurrentPlayer.PlayCard(index);
+        public void TellColor(string color, int[] cards, Player player)
+        {
+			player.TellColor(color, cards);
 		}
 
-		public void DropCard(int index, long id) {
-			playerBase.GetPlayer(id).Drop(index);
-			//game.CurrentPlayer.Drop(index);
-		}
-		public void TellColor(string color, int[] cards, long id) {
-			playerBase.GetPlayer(id).TellColor(color, cards);
-			//game.CurrentPlayer.TellColor(color, index);
-		}
-		public void TellRank(int rank, int[] cards, long id) {
-			playerBase.GetPlayer(id).TellRank(rank, cards);
-			//game.CurrentPlayer.TellRank(rank, index);
+		public void TellRank(int rank, int[] cards, Player player) {
+            player.TellRank(rank, cards);
 		}
 
 		public Command(string token) {
@@ -70,56 +97,81 @@ namespace hanabi.Controller {
 			playerBase = new PlayerBase.PlayerBase();
 			bot.StopReceiving();
 			bot.StartReceiving();
-			ListenMessege().Wait();
+            ListenMessege().Wait();
 		}
+
 
 		public async Task Respond(long chatId, string text) {
 			Console.WriteLine(chatId.ToString() + " send this - " + text);
 			await bot.SendTextMessage(chatId, text);
 		}
-		public async Task ListenMessege() {
-			//var me = bot.GetMe();
-			Console.WriteLine("Ready to work");
 
-			while (true) {
-				var updates = await bot.GetUpdates();
-				foreach (var update in updates) {
-					if (update.Message.Type == Telegram.Bot.Types.MessageType.TextMessage) {
-						Console.WriteLine(update.Message.Text + " from " + update.Message.From.FirstName + " " + update.Message.Chat.Id);
-						try {
 
-							MakeMove(update.Message.Text, update.Message.Chat.Id);
-							
-						} catch (Exception e) {
-							await Respond(update.Message.Chat.Id, e.Message);
-						}
-					}
-				}
-			}
-		}
+
+        public async Task ListenMessege()
+        {
+            //var me = bot.GetMe();
+            Console.WriteLine("Ready to work");
+            var offset = 0;
+
+            while (true)
+            {
+                var updates = await bot.GetUpdates(offset);
+
+                foreach (var update in updates)
+                {
+                    if (update.Message.Type == Telegram.Bot.Types.MessageType.TextMessage)
+                    {
+                        Console.WriteLine(update.Message.Text + " from " + update.Message.From.FirstName + " " + update.Message.Chat.Id);
+                        try
+                        {
+
+                            MakeMove(update.Message.Text, update.Message.Chat.Id);
+
+                        }
+                        catch (Exception e)
+                        {
+                            Respond(update.Message.Chat.Id, e.Message).Wait();
+                        }
+                    }
+
+                    offset = update.Id + 1;
+                }
+            }
+        }
 
 
 		public bool MakeMove(string command, long id) {
 			command = command.ToLower();
+            Player player = playerBase.GetPlayer(id);
 			if (command == "start") {
 				StartGame(id);
-			} else if (command.Contains("play card")) {
-				PlayCard(Service.GetCard("play card", command), id);
-			} else if (command.Contains("tell rank")) {
-				int rank = Service.GetRank(command);
-				TellRank(rank, Service.GetIndexCards(command), id);
-			} else if (command.Contains("tell color")) {
-				string color = Service.GetColor(command);
-				TellColor(color, Service.GetIndexCards(command), id);
-			} else if (command.Contains("drop")) {
-				DropCard(Service.GetCard("drop", command), id);
-			} else
-				throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз");
-			Player player = playerBase.GetPlayer(id);
-			ShowInfo(player);
-			ShowInfo(player.GetOpponent());
+			} else 
+            if(player.State)
+            {
+                    
+                if (command.Contains("play card")) {
+				    PlayCard(Service.GetCard("play card", command),player);
+			    } else if (command.Contains("tell rank")) {
+				    int rank = Service.GetRank(command);
+                    TellRank(rank, Service.GetIndexCards(command), player);
+			    } else if (command.Contains("tell color")) {
+				    string color = Service.GetColor(command);
+                    TellColor(color, Service.GetIndexCards(command), player);
+			    } else if (command.Contains("drop")) {
+                    DropCard(Service.GetCard("drop", command), player);
+                }
+                else
+                {
+                    Respond(player.ID, "Неизвестная комманда. Попробуйте еще раз").Wait();
+                }
+			} 
+            else
+				//throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз"); зачем так жестоко?
+                Respond(player.ID,"Неизвестная комманда." + Instruction).Wait();
+            ShowInfo(player);
 			return true;
-		}
+        }
 
 		public string GetResultGame() {
 			//if (this.State == false)
