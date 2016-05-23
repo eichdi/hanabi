@@ -10,11 +10,21 @@ namespace hanabi.GameLogic
     {
         private long id;
         private Game game;
+
+        public IPlayerGame PlayerGame
+        {
+            get
+            {
+                return game;
+            }
+        }
+
+        //есть ли у игрока игра, не закончена ли она и может ли он сейчас вообще ходить
         public bool State
         {
             get
             {
-                return game != null && game.State;
+                return game != null && game.State && game.CanPlay(this);
             }
         }
         public long ID
@@ -61,12 +71,7 @@ namespace hanabi.GameLogic
         //}
 
 		public Player GetOpponent() {
-			if (this == game.CurrentPlayer)
-				return game.NextPlayer;
-			else if (this == game.NextPlayer)
-				return game.CurrentPlayer;
-			else
-				throw new Exception("Пользователь не играет в данный момент");
+            return game.GetOpponent(this);
 		}
 
 
