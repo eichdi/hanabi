@@ -47,6 +47,9 @@ namespace hanabi.GameLogic
         {
             return Service.ConvertCard(game.GetOpponentCard(this));
         }
+		public string GetKnownCards() {
+			return game.GetKnownCards(this);
+		}
         public string GetTableCard()
         {
             return game.GetTableCard();
@@ -56,6 +59,15 @@ namespace hanabi.GameLogic
         //public string GetMyCard() { 
         //
         //}
+
+		public Player GetOpponent() {
+			if (this == game.CurrentPlayer)
+				return game.NextPlayer;
+			else if (this == game.NextPlayer)
+				return game.CurrentPlayer;
+			else
+				throw new Exception("Пользователь не играет в данный момент");
+		}
 
 
         public void PlayCard(int index)

@@ -11,6 +11,18 @@ namespace hanabi.GameLogic
         private bool hasInfoColor = false;
         private bool hasInfoRank = false;
 
+		public bool HasInfoColor {
+			get {
+				return hasInfoColor;
+			}
+		}
+
+		public bool HasInfoRank {
+			get {
+				return hasInfoRank;
+			}
+		}
+
         public string GetRisk(GameTable table)
         {
             string result = "";

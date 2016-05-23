@@ -199,7 +199,35 @@ namespace hanabi.GameLogic
 
         }
 
+		public string GetKnownCards(Player player) {
+			if (player == firstPlayer.Player)
+				return GetKnownCards(firstPlayer);
+			else if (player == secondPlayer.Player)
+				return GetKnownCards(secondPlayer);
+			else
+				throw new ArgumentException("Пользователь не играет в данный момент");
+		}
 
+		public string GetKnownCards(InfoPlayer player) {
+			string result = "";
+			for (int i = 0; i < 5; i++) {
+				OnHandCard card = player.CardPlayer[i];
+				if (card != null) {
+					result += ' ';
+
+					if (card.HasInfoColor)
+						result += card.Color[0];
+					else
+						result += '*';
+
+					if (card.HasInfoRank)
+						result += card.Rank;
+					else
+						result += '*';
+				}
+			}
+			return result;
+		}
 
         //возможный функционал
         public string GetRiskCurrentPlayerCard()
