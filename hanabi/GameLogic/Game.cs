@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace hanabi.GameLogic
 {
-    class Game
+    class Game : hanabi.GameLogic.IPlayerGame
     {
         private int risk;
         private int gamedCards;
@@ -136,6 +136,7 @@ namespace hanabi.GameLogic
         //3
         public void TellColor(Player player, string color, int[] index)
         {
+            color = color.ToUpper();
             if (CanPlay(player))
             {
                 for (int i = 0; i < index.Length; i++)
@@ -167,13 +168,23 @@ namespace hanabi.GameLogic
         }
 
         //Возможность игры для игрока
-        private bool CanPlay(Player player)
+        public bool CanPlay(Player player)
         {
             if (player.ID == firstPlayer.Player.ID && state)
             {
                 return true;
             }
             return false;
+        }
+
+        public Player GetOpponent(Player player)
+        {
+            if (player.ID != firstPlayer.Player.ID && player.ID == secondPlayer.Player.ID)
+                return firstPlayer.Player;
+            if (player.ID != secondPlayer.Player.ID && player.ID == firstPlayer.Player.ID)
+                return secondPlayer.Player;
+            else
+                throw new ArgumentException("Игрок не принадлежит этой игре");
         }
 
         public bool CheckPlayer(Player player)
