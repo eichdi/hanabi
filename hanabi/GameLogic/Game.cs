@@ -64,6 +64,8 @@ namespace hanabi.GameLogic
         private void EndGame()
         {
             state = false;
+			//firstPlayer.Player.ExitGame();
+			//secondPlayer.Player.ExitGame();
         }
 
         public bool SynchGame(Player player1, Player player2){

@@ -66,6 +66,8 @@ namespace hanabi.Controller {
                     {
                         Respond(player.ID, "Игра закончена!" + Instruction).Wait();
                         Respond(player.GetOpponent().ID, "Игра закончена!" + Instruction).Wait();
+						player.GetOpponent().ExitGame();
+						player.ExitGame();
                     }
                 }
                 //Условие при котором игра не закончена и не ходит наш игрок
@@ -148,29 +150,23 @@ namespace hanabi.Controller {
             Player player = playerBase.GetPlayer(id);
 			if (command == "start") {
 				StartGame(id);
-			} else 
-            if(player.State)
-            {
-                    
-                if (command.Contains("play card")) {
-				    PlayCard(Service.GetCard("play card", command),player);
-			    } else if (command.Contains("tell rank")) {
-				    int rank = Service.GetRank(command);
-                    TellRank(rank, Service.GetIndexCards(command), player);
-			    } else if (command.Contains("tell color")) {
-				    string color = Service.GetColor(command);
-                    TellColor(color, Service.GetIndexCards(command), player);
-			    } else if (command.Contains("drop")) {
-                    DropCard(Service.GetCard("drop", command), player);
-                }
-                else
-                {
-                    Respond(player.ID, "Неизвестная комманда. Попробуйте еще раз").Wait();
-                }
+			} else if (player.State) {
+				if (command.Contains("play card")) {
+					PlayCard(Service.GetCard("play card", command), player);
+				} else if (command.Contains("tell rank")) {
+					int rank = Service.GetRank(command);
+					TellRank(rank, Service.GetIndexCards(command), player);
+				} else if (command.Contains("tell color")) {
+					string color = Service.GetColor(command);
+					TellColor(color, Service.GetIndexCards(command), player);
+				} else if (command.Contains("drop")) {
+					DropCard(Service.GetCard("drop", command), player);
+				} else {
+					Respond(player.ID, "Неизвестная комманда. Попробуйте еще раз").Wait();
+				}
 			} 
             else
-				//throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз"); зачем так жестоко?
-                Respond(player.ID,"Неизвестная комманда." + Instruction).Wait();
+				throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз");
             ShowInfo(player);
 			return true;
         }

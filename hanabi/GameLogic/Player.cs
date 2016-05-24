@@ -25,7 +25,7 @@ namespace hanabi.GameLogic
         {
             get
             {
-                return game != null && game.State && game.CanPlay(this);
+                return game != null && game.CanPlay(this);
             }
         }
         public long ID
@@ -54,6 +54,11 @@ namespace hanabi.GameLogic
             }
             return false;
         }
+
+		public void ExitGame() {
+			this.game = null;
+		}
+
         public string GetOpponentCard()
         {
             return Service.ConvertCard(game.GetOpponentCard(this));
