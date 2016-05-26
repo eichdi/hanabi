@@ -109,7 +109,10 @@ namespace hanabi.Controller
             playerBase = new PlayerBase.PlayerBase();
             bot.StopReceiving();
             bot.StartReceiving();
-            ListenMessege().Wait();
+
+            Console.WriteLine("Ready to work");
+            while(true)
+                ListenMessege().Wait();
         }
 
 
@@ -124,11 +127,9 @@ namespace hanabi.Controller
         public async Task ListenMessege()
         {
             //var me = bot.GetMe();
-            Console.WriteLine("Ready to work");
             var offset = 0;
 
-            while (true)
-            {
+
                 var updates = await bot.GetUpdates(offset);
 
                 foreach (var update in updates)
@@ -149,8 +150,8 @@ namespace hanabi.Controller
                     }
 
                     offset = update.Id + 1;
+                
                 }
-            }
         }
 
 
