@@ -7,57 +7,38 @@ using hanabi.GameLogic;
 using Telegram.Bot;
 using hanabi.PlayerBase;
 
-<<<<<<< HEAD
 namespace hanabi.Controller
 {
     class Command
     {
-        public Game game;
-        private int turn;
-        private int level;
-        public bool State
+        private Player waitPlayer;
+        private Api bot;
+        private IPlayerBase playerBase;
+        // TODO: Написать инструкцию к игре
+        public string Instruction;
+
+        public void StartGame(long id)
         {
-            get
+            Player player = playerBase.GetPlayer(id);
+
+            if (waitPlayer != null && waitPlayer.ID != id)
             {
-                return game != null && game.State;
+                var game = new Game(player, waitPlayer);
+
+                Respond(player.ID, "Игра началась \n " + Instruction).Wait();
+                Respond(waitPlayer.ID, "Игра началась \n " + Instruction).Wait();
+                waitPlayer = null;
+            }
+            else
+            {
+                waitPlayer = player;
+                Respond(player.ID, "Подождите пока мы не найдем второго игрока").Wait();
             }
         }
-        public void StartGame(string[] card, long id1, long id2)
-        {
-            turn = 0;
-            Player player1 = new Player(id1);
-            Player player2 = new Player(id2);
-            PackOfCard pack = new PackOfCard(card);
-            game = new Game(player1, player2, pack);
-        }
-=======
-namespace hanabi.Controller {
-	class Command {
-		private Player waitPlayer;
-		private Api bot;
-		private IPlayerBase playerBase;
-        // TODO: Написать инструкцию к игре
-		public string Instruction;
->>>>>>> refs/remotes/origin/BotLogic
-
-		public void StartGame(long id) {
-			Player player = playerBase.GetPlayer(id);
-
-			if (waitPlayer != null && waitPlayer.ID != id) {
-				var game = new Game(player, waitPlayer);
-
-				Respond(player.ID, "Игра началась \n " + Instruction).Wait();
-				Respond(waitPlayer.ID, "Игра началась \n " + Instruction).Wait();
-				waitPlayer = null;
-			} else {
-				waitPlayer = player;
-				Respond(player.ID, "Подождите пока мы не найдем второго игрока").Wait();
-			}
-		}
 
 
 
-		
+
 
         private void ShowInfo(Player player)
         {
@@ -91,8 +72,8 @@ namespace hanabi.Controller {
                     {
                         Respond(player.ID, "Игра закончена!" + Instruction).Wait();
                         Respond(player.GetOpponent().ID, "Игра закончена!" + Instruction).Wait();
-						player.GetOpponent().ExitGame();
-						player.ExitGame();
+                        player.GetOpponent().ExitGame();
+                        player.ExitGame();
                     }
                 }
                 //Условие при котором игра не закончена и не ходит наш игрок
@@ -103,75 +84,40 @@ namespace hanabi.Controller {
         public void PlayCard(int index, Player player)
         {
             player.PlayCard(index);
-		}
+        }
 
         public void DropCard(int index, Player player)
         {
             player.Drop(index);
-		}
+        }
 
         public void TellColor(string color, int[] cards, Player player)
         {
-<<<<<<< HEAD
-            if (true)
-            {
-                turn++;
-                if (command.Contains("Start new game with deck "))
-                {
-                    //временное решение
-                    // TODO : пересобрать эту часть кода
-                    StartGame(Service.GetCards("Start new game with deck ", command),0,1);
-                    return true;
-                }
-                if (command.Contains("Play card "))
-                {
-                    PlayCard(Service.GetCard("Play card ", command));
-                    return true;
-                }
-                if (command.Contains("Tell rank "))
-                {
-                    string[] analize = command.Split(' ');
-                    TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command));
-                    return true;
-                }
-                if (command.Contains("Tell color "))
-                {
-                    string[] analize = command.Split(' ');
-                    TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command));
-                    return true;
-                }
-                if (command.Contains("Drop card "))
-                {
-                    DropCard(Service.GetCard("Drop card ", command));
-                    return true;
-                }
-            }
-            return false;
+            player.TellColor(color, cards);
         }
-=======
-			player.TellColor(color, cards);
-		}
 
-		public void TellRank(int rank, int[] cards, Player player) {
+        public void TellRank(int rank, int[] cards, Player player)
+        {
             player.TellRank(rank, cards);
-		}
+        }
 
-		public Command(string token) {
+        public Command(string token)
+        {
 
             Instruction = new System.IO.StreamReader("instruction.txt", Encoding.UTF8).ReadToEnd();
-			bot = new Api(token);
-			playerBase = new PlayerBase.PlayerBase();
-			bot.StopReceiving();
-			bot.StartReceiving();
+            bot = new Api(token);
+            playerBase = new PlayerBase.PlayerBase();
+            bot.StopReceiving();
+            bot.StartReceiving();
             ListenMessege().Wait();
-		}
+        }
 
 
-		public async Task Respond(long chatId, string text) {
-			Console.WriteLine(chatId.ToString() + " send this - " + text);
-			await bot.SendTextMessage(chatId, text);
-		}
->>>>>>> refs/remotes/origin/BotLogic
+        public async Task Respond(long chatId, string text)
+        {
+            Console.WriteLine(chatId.ToString() + " send this - " + text);
+            await bot.SendTextMessage(chatId, text);
+        }
 
 
 
@@ -208,58 +154,73 @@ namespace hanabi.Controller {
         }
 
 
-		public bool MakeMove(string command, long id) {
-			command = command.ToLower();
+        public bool MakeMove(string command, long id)
+        {
+            command = command.ToLower();
             Player player = playerBase.GetPlayer(id);
-			if (command == "start") {
-				StartGame(id);
-			} else if (player.State) {
-				if (command.Contains("play card")) {
-					PlayCard(Service.GetCard("play card", command), player);
-				} else if (command.Contains("tell rank")) {
-					int rank = Service.GetRank(command);
-					TellRank(rank, Service.GetIndexCards(command), player);
-				} else if (command.Contains("tell color")) {
-					string color = Service.GetColor(command);
-					TellColor(color, Service.GetIndexCards(command), player);
-				} else if (command.Contains("drop")) {
-					DropCard(Service.GetCard("drop", command), player);
-				} else {
-					Respond(player.ID, "Неизвестная комманда. Попробуйте еще раз").Wait();
-				}
-			} 
+            if (command == "start")
+            {
+                StartGame(id);
+            }
+            else if (player.State)
+            {
+                if (command.Contains("play card"))
+                {
+                    PlayCard(Service.GetCard("play card", command), player);
+                }
+                else if (command.Contains("tell rank"))
+                {
+                    int rank = Service.GetRank(command);
+                    TellRank(rank, Service.GetIndexCards(command), player);
+                }
+                else if (command.Contains("tell color"))
+                {
+                    string color = Service.GetColor(command);
+                    TellColor(color, Service.GetIndexCards(command), player);
+                }
+                else if (command.Contains("drop"))
+                {
+                    DropCard(Service.GetCard("drop", command), player);
+                }
+                else
+                {
+                    Respond(player.ID, "Неизвестная комманда. Попробуйте еще раз").Wait();
+                }
+            }
             else
-				throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз");
+                throw new ArgumentException("Неизвестная комманда. Попробуйте еще раз");
             ShowInfo(player);
-			return true;
+            return true;
         }
 
-		public string GetResultGame() {
-			//if (this.State == false)
-			//{
-			//    return "Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() ;
-			//}
-			//else return null;
-			return null;
-		}
-		public string GetResult(string command) {
-			//if (this.game != null)
-			//{
-			//    string result = "";
-			//    result += "\n Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + game.Risk.ToString() + ", state: " + this.State.ToString();
-			//    result += "\n" + "  Current player: " + this.game.GetCurrentPlayerCard();
-			//    result += "\n" + "                  " + this.game.GetRiskCurrentPlayerCard();
-			//    result += "\n" + "     Next player: " + this.game.GetNextPlayerCard();
-			//    result += "\n" + "                  " + this.game.GetRiskNextPlayerCard();
-			//    result += "\n" + "           Table: " + this.game.GetTableCard();
-			//    result += "\n" + command;
-			//    return result;
-			//}
-			//else
-			//{
-			//    return command;
-			//}
-			return null;
-		}
-	}
+        public string GetResultGame()
+        {
+            //if (this.State == false)
+            //{
+            //    return "Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() ;
+            //}
+            //else return null;
+            return null;
+        }
+        public string GetResult(string command)
+        {
+            //if (this.game != null)
+            //{
+            //    string result = "";
+            //    result += "\n Turn: " + this.turn.ToString() + ", cards: " + game.GamedCards.ToString() + ", with risk: " + game.Risk.ToString() + ", state: " + this.State.ToString();
+            //    result += "\n" + "  Current player: " + this.game.GetCurrentPlayerCard();
+            //    result += "\n" + "                  " + this.game.GetRiskCurrentPlayerCard();
+            //    result += "\n" + "     Next player: " + this.game.GetNextPlayerCard();
+            //    result += "\n" + "                  " + this.game.GetRiskNextPlayerCard();
+            //    result += "\n" + "           Table: " + this.game.GetTableCard();
+            //    result += "\n" + command;
+            //    return result;
+            //}
+            //else
+            //{
+            //    return command;
+            //}
+            return null;
+        }
+    }
 }
