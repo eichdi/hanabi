@@ -4,17 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace hanabi.GameLogic
 {
     class Player
     {
         private long id;
         private Game game;
+
+        public IPlayerGame PlayerGame
+        {
+            get
+            {
+                return game;
+            }
+        }
+
+        //есть ли у игрока игра, не закончена ли она и может ли он сейчас вообще ходить
         public bool State
         {
             get
             {
-                return game != null && game.State;
+                return game != null && game.CanPlay(this);
             }
         }
         public long ID
@@ -43,10 +54,18 @@ namespace hanabi.GameLogic
             }
             return false;
         }
+
+		public void ExitGame() {
+			this.game = null;
+		}
+
         public string GetOpponentCard()
         {
             return Service.ConvertCard(game.GetOpponentCard(this));
         }
+		public string GetKnownCards() {
+			return game.GetKnownCards(this);
+		}
         public string GetTableCard()
         {
             return game.GetTableCard();
@@ -56,6 +75,10 @@ namespace hanabi.GameLogic
         //public string GetMyCard() { 
         //
         //}
+
+		public Player GetOpponent() {
+            return game.GetOpponent(this);
+		}
 
 
         public void PlayCard(int index)

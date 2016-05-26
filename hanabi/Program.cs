@@ -8,7 +8,7 @@ using hanabi.Controller;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
-using System.IO;
+
 namespace hanabi
 {
    
@@ -16,48 +16,33 @@ namespace hanabi
     {
         static void Main(string[] args)
         {
-            var Bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
+            Command com = new Command("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
+            //var Bot = new Api("225115203:AAH_vGJDopLajGzNSK16YkQLjGBCZzVUT10");
 
-            Run(Bot).Wait();
+            //Run(Bot).Wait();
         }
 
         static async Task Run(Api Bot)
         {
-
-
-            var me = await Bot.GetMe();
-
-            Console.WriteLine("Hello my name is {0}", me.Username);
-
             var offset = 0;
-
+			//Command com = new Command();
             while (true)
             {
                 var updates = await Bot.GetUpdates(offset);
                 
-
                 foreach (var update in updates)
                 {
                     if (update.Message.Type == MessageType.TextMessage)
                     {
-                        await Bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
-                        //await Task.Delay(2000);
-                        var t = await Bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
-                        Console.WriteLine("Echo Message: {0}", update.Message.Text);
-                    }
-
-                    if (update.Message.Type == MessageType.PhotoMessage)
-                    {
-                        var file = await Bot.GetFile(update.Message.Photo.LastOrDefault().FileId);
-
-                        Console.WriteLine("Received Photo: {0}", file.FilePath);
-
-                        var filename = file.FileId+"."+file.FilePath.Split('.').Last();
-
-                        using (var profileImageStream = File.Open(filename, FileMode.Create))
-                        {
-                            await file.FileStream.CopyToAsync(profileImageStream);
-                        }
+						//await Bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
+						//await Task.Delay(2000);
+						//var t = await Bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
+						//Console.WriteLine("Echo Message: {0}", update.Message.Text);
+						//if (update.Message.From.I == com.game.CurrentPlayer) {
+						//com.DoFunc(update.Message.Text);
+						//}
+						Console.WriteLine("	" + update.Message.Text);
+						var t = await Bot.SendTextMessage(update.Message.Chat.Id, Console.ReadLine());
                     }
 
                     offset = update.Id + 1;
