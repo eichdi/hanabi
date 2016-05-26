@@ -7,7 +7,7 @@ using hanabi.GameLogic;
 
 namespace hanabi.PlayerBase
 {
-    class PlayerBase
+    class PlayerBase : IPlayerBase
     {
         private List<Player> playerList;
 
@@ -15,6 +15,7 @@ namespace hanabi.PlayerBase
         {
             playerList = new List<Player>();
         }
+
         public Player GetPlayer(long id)
         {
             foreach (Player player in playerList)

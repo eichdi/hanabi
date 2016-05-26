@@ -8,8 +8,14 @@ namespace hanabi.GameLogic
 {
     class InfoPlayer
     {
-        public CollectCardOnHand cardPlayer;
-        public Player player;
+        public CollectCardOnHand CardPlayer {
+			get; set;
+		}
+
+        public Player Player {
+			get; set;
+		}
+
         public InfoPlayer(Player player, PackOfCard pack)
         {
             //раздаем карты
@@ -18,8 +24,8 @@ namespace hanabi.GameLogic
             {
                 card[i] = pack.TakeCard();
             }
-            cardPlayer = new CollectCardOnHand(card);
-            this.player = player;
+            CardPlayer = new CollectCardOnHand(card);
+            this.Player = player;
 
         }
     }

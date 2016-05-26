@@ -26,6 +26,13 @@ namespace hanabi.GameLogic
             }
             return result;
         }
+
+		public OnHandCard this[int index] {
+			get {
+				return card[index];
+			}
+		}
+
         public CollectCardOnHand(OnHandCard[] card)
         {
             //создаем копию, для того чтобы другая часть программы не имела ссылку на поле
