@@ -97,36 +97,33 @@ namespace hanabi.Controller
 
         public bool DoFunc(string command)
         {
-            if (true)
+            turn++;
+            if (command.Contains("Start new game with deck "))
             {
-                turn++;
-                if (command.Contains("Start new game with deck "))
-                {
-                    StartGame(Service.GetCards("Start new game with deck ", command));
-                    return true;
-                }
-                if (command.Contains("Play card "))
-                {
-                    PlayCard(Service.GetCard("Play card ", command));
-                    return true;
-                }
-                if (command.Contains("Tell rank "))
-                {
-                    string[] analize = command.Split(' ');
-                    TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command));
-                    return true;
-                }
-                if (command.Contains("Tell color "))
-                {
-                    string[] analize = command.Split(' ');
-                    TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command));
-                    return true;
-                }
-                if (command.Contains("Drop card "))
-                {
-                    DropCard(Service.GetCard("Drop card ", command));
-                    return true;
-                }
+				StartGame(Service.GetCards("Start new game with deck ", command));
+                return true;
+            }
+            if (command.Contains("Play card "))
+            {
+                PlayCard(Service.GetCard("Play card ", command));
+                return true;
+            }
+            if (command.Contains("Tell rank "))
+            {
+                string[] analize = command.Split(' ');
+                TellRank(analize[2], Service.GetCards(("Tell rank " + analize[2] + " for cards "), command));
+                return true;
+            }
+            if (command.Contains("Tell color "))
+            {
+                string[] analize = command.Split(' ');
+                TellColor(analize[2], Service.GetCards(("Tell color " + analize[2] + " for cards "), command));
+                return true;
+            }
+            if (command.Contains("Drop card "))
+            {
+                DropCard(Service.GetCard("Drop card ", command));
+                return true;
             }
             return false;
         }
@@ -165,8 +162,5 @@ namespace hanabi.Controller
                 return command;
             }
         }
-
-
-
     }
 }

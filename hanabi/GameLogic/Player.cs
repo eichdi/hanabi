@@ -36,7 +36,12 @@ namespace hanabi.GameLogic
         }
         public bool SetGame(Game game)
         {
-            return game.CheckPlayer(this);
+            if (game.CheckPlayer(this))
+            {
+                this.game = game;
+                return true;
+            }
+            return false;
         }
         public string GetOpponentCard()
         {
